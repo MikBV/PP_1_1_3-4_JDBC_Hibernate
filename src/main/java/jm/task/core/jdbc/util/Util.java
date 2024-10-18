@@ -7,7 +7,7 @@ public class Util {
     // реализуйте настройку соеденения с БД
     private static final String URL = "jdbc:mysql://localhost:3306/kata_1_1_3_db";
     private static final String ROOT_NAME = "root";
-    private static final String ROOT_PASSWORD = "";
+    private static final String ROOT_PASSWORD = "djnaTWPI";
 
     public static Connection getConnection() {
         Connection connection = null;

@@ -48,7 +48,7 @@ public class UserDaoJDBCImpl implements UserDao {
         try (Connection connection = Util.getConnection();
              Statement dropTableStatement = connection.createStatement();
              ResultSet resultSet = dropTableStatement.executeQuery(checkTable)){
-            if (!resultSet.next()) {
+            if (resultSet.next()) {
                 dropTableStatement.executeUpdate(sql);
             }
         } catch (SQLException e) {
@@ -63,9 +63,9 @@ public class UserDaoJDBCImpl implements UserDao {
      * @param age Возраст пользователя, должен быть положительным
      */
     public void saveUser(String name, String lastName, byte age) {
-        String sql = "INSERT INTO users (name, lastname, age) VALUES ("
-                + name + ", "
-                + lastName + ", "
+        String sql = "INSERT INTO users (name, lastname, age) VALUES ('"
+                + name + "', '"
+                + lastName + "', "
                 + age + " );";
 
         try (Connection connection = Util.getConnection();
