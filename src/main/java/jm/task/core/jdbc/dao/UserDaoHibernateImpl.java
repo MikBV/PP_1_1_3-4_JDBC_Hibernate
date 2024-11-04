@@ -14,10 +14,11 @@ import java.util.List;
 
 public class UserDaoHibernateImpl implements UserDao {
     public UserDaoHibernateImpl() {
-
     }
 
-
+    /**
+     * Метод для создания таблицы users при помощи JDBC
+     */
     @Override
     public void createUsersTable() {
         String sql = "CREATE TABLE users ("
@@ -38,11 +39,13 @@ public class UserDaoHibernateImpl implements UserDao {
         }
     }
 
+    /**
+     * Метод для удаления таблицы users при помощи JDBC
+     */
     @Override
     public void dropUsersTable() {
         String sql = "DROP TABLE IF EXISTS users";
         String checkTable = "SHOW TABLES LIKE 'users'";
-
 
         try (Connection connection = Util.getConnection();
              Statement dropTableStatement = connection.createStatement();
@@ -53,12 +56,18 @@ public class UserDaoHibernateImpl implements UserDao {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
     }
 
+    /**
+     * Метод для добавления новой строки в таблицу users
+     * @param name Имя пользователя
+     * @param lastName Фамилия пользователя
+     * @param age Возраст пользователя, должен быть положительным
+     */
     @Override
     public void saveUser(String name, String lastName, byte age) {
         Transaction transaction = null;
+
         try (Session session = Util.getSessionFactory().openSession()) {
             transaction = session.beginTransaction();
             session.save(new User(name, lastName, age));
@@ -71,12 +80,17 @@ public class UserDaoHibernateImpl implements UserDao {
         }
     }
 
+    /**
+     * Удаляет пользователя по его id - уникальному номеру
+     * @param id - номер пользователя
+     */
     @Override
     public void removeUserById(long id) {
         Transaction transaction = null;
+
         try (Session session = Util.getSessionFactory().openSession()) {
             transaction = session.beginTransaction();
-            session.delete(session.get(User.class, id));
+            session.remove(session.get(User.class, id));
             transaction.commit();
         } catch (Exception e) {
             if (transaction != null) {
@@ -86,10 +100,15 @@ public class UserDaoHibernateImpl implements UserDao {
         }
     }
 
+    /**
+     * Формирует и возвращает список всех пользователей из таблицы users в виде List-a
+     * @return List параметризованный классом User
+     */
     @Override
     public List<User> getAllUsers() {
         Transaction transaction = null;
         List<User> userList = new ArrayList<>();
+
         try (Session session = Util.getSessionFactory().openSession()) {
             transaction = session.beginTransaction();
             userList = session.createQuery("from User", User.class).getResultList();
@@ -103,6 +122,9 @@ public class UserDaoHibernateImpl implements UserDao {
         return userList;
     }
 
+    /**
+     * Очищает таблицу users от значений.
+     */
     @Override
     public void cleanUsersTable() {
         Transaction transaction = null;
@@ -116,6 +138,5 @@ public class UserDaoHibernateImpl implements UserDao {
             }
             e.printStackTrace();
         }
-
     }
 }

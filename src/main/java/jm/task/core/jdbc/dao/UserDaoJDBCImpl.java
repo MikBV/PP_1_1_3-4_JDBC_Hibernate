@@ -3,16 +3,12 @@ package jm.task.core.jdbc.dao;
 import jm.task.core.jdbc.model.User;
 import jm.task.core.jdbc.util.Util;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class UserDaoJDBCImpl implements UserDao {
     public UserDaoJDBCImpl() {
-
     }
 
     /**
@@ -63,14 +59,13 @@ public class UserDaoJDBCImpl implements UserDao {
      * @param age Возраст пользователя, должен быть положительным
      */
     public void saveUser(String name, String lastName, byte age) {
-        String sql = "INSERT INTO users (name, lastname, age) VALUES ('"
-                + name + "', '"
-                + lastName + "', "
-                + age + " );";
+        String sql = "INSERT INTO users (name, lastname, age) VALUES (?, ?, ?)";
 
         try (Connection connection = Util.getConnection();
-             Statement saveUserStatement = connection.createStatement()){
-            saveUserStatement.executeUpdate(sql);
+             PreparedStatement saveUserStatement = connection.prepareStatement(sql)){
+            saveUserStatement.setString(1, name);
+            saveUserStatement.setString(2, lastName);
+            saveUserStatement.setByte(3, age);
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -78,15 +73,15 @@ public class UserDaoJDBCImpl implements UserDao {
 
     /**
      * Удаляет пользователя по его id - уникальному номеру
-     * @param id
+     * @param id - номер пользователя
      */
 
     public void removeUserById(long id) {
-        String sql = "DELETE FROM users WHERE id = " + id;
+        String sql = "DELETE FROM users WHERE id (?)";
 
         try (Connection connection = Util.getConnection();
-             Statement createTableStatement = connection.createStatement()){
-            createTableStatement.executeUpdate(sql);
+             PreparedStatement removeUserStatement = connection.prepareStatement(sql)){
+            removeUserStatement.setLong(1, id);
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -100,11 +95,9 @@ public class UserDaoJDBCImpl implements UserDao {
         List<User> resultListIUsers = new ArrayList<>();
         String sql = "SELECT * FROM users";
 
-
-
         try (Connection connection = Util.getConnection();
-             Statement createTableStatement = connection.createStatement();
-             ResultSet setFromUsers = createTableStatement.executeQuery(sql)){
+             Statement getAllUsersStatement = connection.createStatement();
+             ResultSet setFromUsers = getAllUsersStatement.executeQuery(sql)){
             while (setFromUsers.next()) {
                 User addUser = new User(setFromUsers.getString("name"),
                         setFromUsers.getString("lastname"),
@@ -123,15 +116,13 @@ public class UserDaoJDBCImpl implements UserDao {
      */
 
     public void cleanUsersTable() {
-
         String sql = "TRUNCATE TABLE users";
+
         try (Connection connection = Util.getConnection();
-             Statement clearStatement = connection.createStatement()) {
-            clearStatement.execute(sql);
+             Statement clearUsersStatement = connection.createStatement()) {
+            clearUsersStatement.execute(sql);
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
-
     }
 }

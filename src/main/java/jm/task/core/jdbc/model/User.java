@@ -2,6 +2,9 @@ package jm.task.core.jdbc.model;
 
 import javax.persistence.*;
 
+/**
+ * Класс-сущность для таблицы users
+ */
 @Entity
 @Table (name="users")
 public class User {

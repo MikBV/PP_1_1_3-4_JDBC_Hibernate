@@ -9,12 +9,25 @@ import org.hibernate.cfg.Configuration;
 import java.sql.Connection;
 import java.sql.*;
 
+/**
+ * Класс для создания подключений через методы JDBC и Hibernate
+ */
 public class Util {
-    // реализуйте настройку соеденения с БД
+    /**
+     * Константы для доступа через JDBC
+     */
     private static final String URL = "jdbc:mysql://localhost:3306/kata_1_1_3_db";
     private static final String ROOT_NAME = "root";
     private static final String ROOT_PASSWORD = "djnaTWPI";
+    /**
+     * Константа-фабрика для доступа через Hibernate, используется паттерн Singleton
+     */
+    private static SessionFactory sessionFactory;
 
+    /**
+     * Метод для получения подключения через методы JDBC
+     * @return - возвращает соединение типом Connection
+     */
     public static Connection getConnection() {
         Connection connection = null;
         try {
@@ -25,13 +38,15 @@ public class Util {
         return connection;
     }
 
-    private static SessionFactory sessionFactory;
-
+    /**
+     * Метод для получения подключения через методы Hibernate
+     * @return возвращает ссылку на экземпляр константы SessionFactory
+     */
     public static SessionFactory getSessionFactory() {
         if (sessionFactory == null) {
             Configuration configuration = new Configuration();
-            configuration.setProperty("hibernate.connection.driver_class", "com.mysql.cj.jdbc.Driver");
-            configuration.setProperty("hibernate.connection.url", "jdbc:mysql://localhost:3306/kata_1_1_3_db");
+            configuration.setProperty("hibernate.connection.driver_class", "com.mysql.cj.jdbc.Driver")
+                    .setProperty("hibernate.connection.url", "jdbc:mysql://localhost:3306/kata_1_1_3_db");
             configuration.setProperty("hibernate.connection.username", "root");
             configuration.setProperty("hibernate.connection.password", "djnaTWPI");
             configuration.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQLDialect");
@@ -42,8 +57,6 @@ public class Util {
                     .applySettings(configuration.getProperties()).build();
             sessionFactory = configuration.buildSessionFactory(serviceRegistry);
         }
-
         return sessionFactory;
     }
-
 }
